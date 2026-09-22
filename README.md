@@ -118,6 +118,12 @@ npm test
 A Mochawesome HTML/JSON report is generated at
 `test/pathCoverage/report/path-coverage-report.html`.
 
+## CI/CD
+A GitHub Actions workflow ([.github/workflows/api-tests.yml](.github/workflows/api-tests.yml))
+runs the test suite on every pull request to `main`. It installs
+dependencies, starts the API in the background, waits for `/api/healthcheck`
+to respond, then runs `npm test`.
+
 | Test file | Test name | Summary |
 |-----------|-----------|---------|
 | `healthcheck.test.js` | returns API health status | Calls `GET /healthcheck` and verifies a `200` response with `status`, `uptime`, and `timestamp` fields. |
