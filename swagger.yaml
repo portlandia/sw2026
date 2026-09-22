@@ -1,0 +1,231 @@
+openapi: 3.0.3
+info:
+  title: E-commerce REST API
+  description: >
+    REST API for an e-commerce platform. Allows users to register, log in to
+    obtain a JWT token, and perform a checkout with cash or credit card
+    payment methods. Cash payments receive a 10% discount. Checkout requires
+    authentication.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+tags:
+  - name: Health
+    description: Service health status
+  - name: Auth
+    description: User registration and authentication
+  - name: Checkout
+    description: Order checkout
+paths:
+  /healthcheck:
+    get:
+      tags:
+        - Health
+      summary: Check API health status
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        '400':
+          description: Missing required fields
+        '409':
+          description: A user with this email already exists
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Log in and receive a JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Missing required fields
+        '401':
+          description: Invalid credentials
+  /checkout:
+    post:
+      tags:
+        - Checkout
+      summary: Perform a checkout
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckoutRequest'
+      responses:
+        '200':
+          description: Checkout completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutResponse'
+        '400':
+          description: Invalid request payload
+        '401':
+          description: Missing or invalid JWT token
+        '404':
+          description: Product not found
+        '409':
+          description: Insufficient stock
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        uptime:
+          type: number
+          example: 12.34
+        timestamp:
+          type: string
+          format: date-time
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: Jane Doe
+        email:
+          type: string
+          format: email
+          example: jane@example.com
+        password:
+          type: string
+          format: password
+          example: MyPassword123!
+    RegisterResponse:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 4
+            name:
+              type: string
+              example: Jane Doe
+            email:
+              type: string
+              example: jane@example.com
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: alice@example.com
+        password:
+          type: string
+          format: password
+          example: Password123!
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    CheckoutRequest:
+      type: object
+      required:
+        - items
+        - paymentMethod
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+              - productId
+              - quantity
+            properties:
+              productId:
+                type: integer
+                example: 1
+              quantity:
+                type: integer
+                example: 2
+        paymentMethod:
+          type: string
+          enum:
+            - cash
+            - credit_card
+          example: cash
+    CheckoutResponse:
+      type: object
+      properties:
+        order:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  productId:
+                    type: integer
+                  name:
+                    type: string
+                  unitPrice:
+                    type: number
+                  quantity:
+                    type: integer
+                  subtotal:
+                    type: number
+            paymentMethod:
+              type: string
+            subtotal:
+              type: number
+            discount:
+              type: number
+            total:
+              type: number
