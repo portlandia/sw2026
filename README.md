@@ -118,6 +118,19 @@ npm test
 A Mochawesome HTML/JSON report is generated at
 `test/pathCoverage/report/path-coverage-report.html`.
 
+### Login Load Test
+The K6 script at `test/loadTesting/login-load-test.js` load-tests
+`POST /api/auth/login` with the seeded Alice user. It ramps to 10 virtual
+users over 5 seconds, holds 30 virtual users for 20 seconds, then ramps down
+to 0 over 5 seconds. The test requires the 95th-percentile request duration
+to remain below 500 ms.
+
+Start the API, then run:
+
+```bash
+k6 run test/loadTesting/login-load-test.js
+```
+
 ## CI/CD
 A GitHub Actions workflow ([.github/workflows/api-tests.yml](.github/workflows/api-tests.yml))
 runs the test suite on every pull request to `main`. It installs
