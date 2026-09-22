@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const request = require('supertest');
 const { BASE_URL } = require('./setup');
 
+// Path coverage for GET /healthcheck: confirms the API is up and reporting status.
 describe('Path: GET /healthcheck', () => {
   it('returns API health status', async () => {
     const res = await request(BASE_URL).get('/healthcheck');
