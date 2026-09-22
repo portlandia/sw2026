@@ -1,3 +1,5 @@
+// Mocha root hooks: boot the real Express server so Supertest calls it over
+// HTTP (not in-process via require), and share BASE_URL with every test file.
 const { spawn } = require('child_process');
 const http = require('http');
 const path = require('path');

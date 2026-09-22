@@ -105,3 +105,24 @@ src/
   server.js      # Application entry point
 swagger.yaml     # OpenAPI/Swagger specification
 ```
+
+## Test Coverage
+Functional path-coverage tests live under `test/pathCoverage` and are built
+with Mocha, Chai, and Supertest, running against a real, locally spawned
+instance of the API over HTTP. Run them with:
+
+```bash
+npm test
+```
+
+A Mochawesome HTML/JSON report is generated at
+`test/pathCoverage/report/path-coverage-report.html`.
+
+| Test file | Test name | Summary |
+|-----------|-----------|---------|
+| `healthcheck.test.js` | returns API health status | Calls `GET /healthcheck` and verifies a `200` response with `status`, `uptime`, and `timestamp` fields. |
+| `auth.register.test.js` | registers a new user with valid data | Calls `POST /auth/register` with a unique email and verifies a `201` response containing the created user's `name`, `email`, and `id`. |
+| `auth.login.test.js` | logs in a seeded user and returns a JWT token | Calls `POST /auth/login` with a seeded user's credentials (Alice) and verifies a `200` response with a non-empty JWT `token`. |
+| `checkout.test.js` | EP-DISC-01: applies a 10% discount when paymentMethod is cash | Logs in, then checks out with `paymentMethod: "cash"` and verifies the 10% discount is reflected in `subtotal`, `discount`, and `total`. |
+| `checkout.test.js` | EP-DISC-02: applies no discount when paymentMethod is credit_card | Same cart as above with `paymentMethod: "credit_card"` and verifies no discount is applied. |
+| `checkout.test.js` | EP-DISC-03: rejects an invalid paymentMethod | Attempts checkout with an unsupported payment method (`boleto`) and verifies a `400` response with no `order` in the body. |
