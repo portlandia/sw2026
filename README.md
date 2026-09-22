@@ -123,7 +123,7 @@ The K6 script at `test/loadTesting/login-load-test.js` load-tests
 `POST /api/auth/login` with the seeded Alice user. It ramps to 10 virtual
 users over 5 seconds, holds 30 virtual users for 20 seconds, then ramps down
 to 0 over 5 seconds. The test requires the 95th-percentile request duration
-to remain below 500 ms.
+to remain below 500 ms. The results of the test runs are displayed in the js page after running the test.
 
 Start the API, then run:
 
